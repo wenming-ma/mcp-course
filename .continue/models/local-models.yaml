@@ -1,0 +1,13 @@
+name: Llama.cpp model
+version: 0.0.1
+schema: v1
+models:
+  - provider: llama.cpp
+    model: Qwen/Qwen1.5-0.5B-Chat-GGUF
+    apiBase: http://localhost:8080
+    defaultCompletionOptions:
+      contextLength: 8192 # Adjust based on the model
+    name: Llama.cpp Qwen1.5-0.5B-Chat-GGUF
+    roles:
+      - chat
+      - edit
