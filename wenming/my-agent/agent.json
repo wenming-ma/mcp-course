@@ -7,8 +7,8 @@
 			"config": {
 				"command": "npx",
 				"args": [
-					"mcp-remote", 
-					"https://wenmingma-mcp-sentiment.hf.space/gradio_api/mcp/sse"
+					"mcp-remote",
+					"http://localhost:7860/gradio_api/mcp/sse" 
 				]
 			}
 		}
