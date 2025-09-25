@@ -12,6 +12,10 @@ from typing import Optional
 
 import requests
 from mcp.server.fastmcp import FastMCP
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize the FastMCP server
 mcp = FastMCP("pr-agent-slack")
