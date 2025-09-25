@@ -7,6 +7,7 @@ Combines all MCP primitives (Tools and Prompts) for complete team communication 
 import json
 import os
 import subprocess
+import requests
 from typing import Optional
 from pathlib import Path
 
@@ -251,14 +252,27 @@ async def send_slack_notification(message: str) -> str:
         return "Error: SLACK_WEBHOOK_URL environment variable not set"
     
     try:
-        # TODO: Import requests library
-        # TODO: Send POST request to webhook_url with JSON payload
-        # TODO: Include the message in the JSON data
-        # TODO: Handle the response and return appropriate status
-        
-        # For now, return a placeholder
-        return f"TODO: Implement Slack webhook POST request for message: {message[:50]}..."
-        
+        # Prepare the payload for Slack webhook
+        payload = {
+            "text": message
+        }
+
+        # Send POST request to Slack webhook
+        response = requests.post(
+            webhook_url,
+            json=payload,
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+
+        # Handle the response and return appropriate status
+        if response.status_code == 200:
+            return "Message sent successfully to Slack"
+        else:
+            return f"Failed to send message to Slack: HTTP {response.status_code} - {response.text}"
+
+    except requests.exceptions.RequestException as e:
+        return f"Error sending message to Slack: {str(e)}"
     except Exception as e:
         return f"Error sending message: {str(e)}"
 
