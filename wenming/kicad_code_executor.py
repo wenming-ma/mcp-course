@@ -33,8 +33,59 @@ from kipy.board_types import (
 from kipy.geometry import Angle, Vector2
 from kipy.util.units import from_mm, to_mm
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.prompts import base
 
 mcp = FastMCP("kicad-code-executor")
+
+
+@mcp.prompt(
+    title="KiCad System Instructions",
+    description="System prompt: call this before first use to load guidance",
+)
+def kicad_system_prompt() -> list[base.Message]:
+    """Return system-style guidance for using this server (English).
+
+    Requirement: Before running anything or invoking tools, call this prompt
+    (kicad_system_prompt) to fetch and load the system instructions below.
+    Clients should keep these instructions in effect for the whole session.
+    """
+    return [
+        base.AssistantMessage(
+            (
+                "[System Instructions]\n"
+                "You are using the KiCad Code Executor MCP server to read KiCad Python API resources and execute code built on those APIs.\n\n"
+                "Before first run or invoking any tool, you MUST call this prompt (kicad_system_prompt) to obtain and load these system instructions.\n\n"
+                "Recommended usage and constraints:\n"
+                "1) Read resources first: call read_kicad_api_docs(\"overview\") as a starting point; then consult \"board\", \"board_types\", \"geometry\", and kicad-api://examples/list as needed.\n"
+                "2) Generate code based on the documentation. The following imports are preloaded for execute_kicad_code: KiCad, BoardLayer, FootprintInstance, Net, Pad, Track, Via, ViaType, Zone, Angle, Vector2, from_mm, to_mm.\n"
+                "3) Execute with execute_kicad_code(code, description) and provide a brief description.\n"
+                "4) Use commits for undo/redo when modifying boards (begin_commit / push_commit / drop_commit).\n"
+                "5) Safety: modify board state only via the KiCad API; avoid unrelated file/network access; prefer reviewing examples if uncertain.\n\n"
+                "Typical workflow:\n"
+                "- read_kicad_api_docs(\"overview\") → read_kicad_api_docs(\"board_types\") → read_kicad_api_docs(\"examples\") → get_example → generate code → execute_kicad_code.\n\n"
+
+                "Goal:\n"
+                "Use the provided resources (APIs and examples) to fulfill the user's request safely and correctly.\n\n"
+                "Before each code execution, ensure you are using the correct interfaces by verifying method signatures, types, units, and required parameters in the resources.\n\n"
+                "Concrete workflow:\n"
+                "1) Understand the user's objective and constraints.\n"
+                "2) Identify required board operations and data (e.g., nets, layers, footprints, tracks).\n"
+                "3) Load docs: read_kicad_api_docs(\"overview\"), then consult \"board\", \"board_types\", and \"geometry\" as needed.\n"
+                "4) Explore examples: read_kicad_api_docs(\"examples\") and read_kicad_api_docs(\"example:NAME\") for similar tasks.\n"
+                "5) Draft a plan mapping each step to specific API methods and types (cite exact method names).\n"
+                "6) Pre-execution checklist (must pass before running code):\n"
+                "   - Verify method/class names exist in docs (board.py, board_types.py).\n"
+                "   - Confirm units (use from_mm()/to_mm()).\n"
+                "   - Confirm layer and net names (use BoardLayer, board.get_nets()).\n"
+                "   - Use commit pattern for modifications (begin_commit, push_commit, drop_commit).\n"
+                "   - Call board.update_items()/create_items()/remove_items() appropriately.\n"
+                "7) Implement minimal, reversible changes first; add prints to confirm assumptions.\n"
+                "8) Execute with execute_kicad_code(code, description).\n"
+                "9) Inspect output/errors; revisit docs and iterate if needed.\n"
+                "10) Finalize with clear commit descriptions once results are correct.\n\n"
+            )
+        )
+    ]
 
 
 @mcp.resource("kicad-api://board.py")
@@ -463,6 +514,8 @@ def main():
     print("    - kicad-api://overview - API overview")
     print("\n  Tool:")
     print("    - execute_kicad_code(code, description) - Execute KiCad Python code")
+    print("\n  Prompt:")
+    print("    - kicad_system_prompt - System guidance (call this before first run)")
     print("\nMake sure KiCad is running with API server enabled!")
     print("=" * 60)
     mcp.run()
