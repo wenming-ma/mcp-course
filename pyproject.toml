@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 kicad-agent-server = "wenming.kicad_agent_server01:main"
+kicad-code-executor = "wenming.kicad_code_executor:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
