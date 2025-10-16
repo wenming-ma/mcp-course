@@ -12,8 +12,10 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("team-guidelines-server")
 
 # Define the base path for team guidelines
-GUIDELINES_PATH = Path("../projects/unit3/team-guidelines")
-TEMPLATES_PATH = Path("../projects/unit3/templates")
+# Use dynamic path based on script location
+REPO_ROOT = Path(__file__).parent.parent.resolve()
+GUIDELINES_PATH = REPO_ROOT / "projects" / "unit3" / "team-guidelines"
+TEMPLATES_PATH = REPO_ROOT / "projects" / "unit3" / "templates"
 
 # Resource 1: PR Guidelines
 @mcp.resource("guidelines://pr-guidelines")
